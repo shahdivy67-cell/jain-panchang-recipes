@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Star, MessageSquare, Clock, Heart, ChefHat, Play, X, Sparkles } from 'lucide-react';
+import { Star, Clock, Heart, Play, X } from 'lucide-react';
 import { Recipe, Language } from '../types';
 import { JAIN_INGREDIENTS_LIST } from '../data/ingredients';
 import { UI_STRINGS } from '../utils/i18n';
@@ -22,6 +22,7 @@ export const RecipeCard: React.FC<Props> = ({
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
   const [showFullDetails, setShowFullDetails] = useState(false);
   const t = UI_STRINGS[lang];
+  const hasVideo = !!recipe.videoUrl;
 
   // Map ingredient ids to localized names
   const ingredientNames = recipe.ingredients.map((ingId) => {
@@ -33,7 +34,7 @@ export const RecipeCard: React.FC<Props> = ({
     <div className="bg-white rounded-3xl overflow-hidden border border-stone-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
       {/* Media / Video Header (Pinterest Style Card) */}
       <div className="relative aspect-[4/3] sm:aspect-video w-full bg-stone-900 overflow-hidden cursor-pointer">
-        {isPlayingVideo ? (
+        {isPlayingVideo && hasVideo ? (
           <div className="relative w-full h-full bg-black">
             <video
               src={recipe.videoUrl}
@@ -44,10 +45,7 @@ export const RecipeCard: React.FC<Props> = ({
               className="w-full h-full object-cover"
             />
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsPlayingVideo(false);
-              }}
+              onClick={(e) => { e.stopPropagation(); setIsPlayingVideo(false); }}
               className="absolute top-3 right-3 bg-black/70 hover:bg-black text-white p-1.5 rounded-full z-10 transition backdrop-blur-sm"
             >
               <X className="w-4 h-4" />
@@ -55,7 +53,7 @@ export const RecipeCard: React.FC<Props> = ({
           </div>
         ) : (
           <div
-            onClick={() => setIsPlayingVideo(true)}
+            onClick={() => hasVideo && setIsPlayingVideo(true)}
             className="w-full h-full relative group"
           >
             <img
@@ -66,12 +64,14 @@ export const RecipeCard: React.FC<Props> = ({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             
-            {/* Play Button Overlay */}
+            {/* Play Button Overlay — only if real video exists */}
+            {hasVideo && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-amber-500/90 group-hover:bg-amber-500 text-white flex items-center justify-center shadow-lg transform group-hover:scale-110 transition duration-300 backdrop-blur-sm pl-1">
                 <Play className="w-6 h-6 fill-current" />
               </div>
             </div>
+            )}
 
             {/* Category Pill */}
             <div className="absolute top-3 left-3 flex flex-wrap gap-1">
